@@ -1,0 +1,317 @@
+<% layout('/layouts/default.html', {title: '用户表管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('用户表管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('web:userStudent:edit')){ %>
+					<a href="${ctx}/web/userStudent/form" class="btn btn-default btnTool" title="${text('新增用户表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${userStudent}" action="${ctx}/web/userStudent/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('登录账号')}：</label>
+					<div class="control-inline">
+						<#form:input path="loginCode" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户昵称')}：</label>
+					<div class="control-inline">
+						<#form:input path="userName" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('登录密码')}：</label>
+					<div class="control-inline">
+						<#form:input path="password" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('电子邮箱')}：</label>
+					<div class="control-inline">
+						<#form:input path="email" maxlength="300" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('手机号码')}：</label>
+					<div class="control-inline">
+						<#form:input path="mobile" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('办公电话')}：</label>
+					<div class="control-inline">
+						<#form:input path="phone" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户性别')}：</label>
+					<div class="control-inline">
+						<#form:input path="sex" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('头像路径')}：</label>
+					<div class="control-inline">
+						<#form:input path="avatar" maxlength="1000" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('个性签名')}：</label>
+					<div class="control-inline">
+						<#form:input path="sign" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('绑定的微信号')}：</label>
+					<div class="control-inline">
+						<#form:input path="wxOpenid" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('绑定的手机串号')}：</label>
+					<div class="control-inline">
+						<#form:input path="mobileImei" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="userType" maxlength="16" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户类型引用编号')}：</label>
+					<div class="control-inline">
+						<#form:input path="refCode" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户类型引用姓名')}：</label>
+					<div class="control-inline">
+						<#form:input path="refName" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('管理员类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="mgrType" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密码安全级别')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdSecurityLevel" maxlength="-1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密码最后更新时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdUpdateDate" readonly="true" maxlength="20" class="form-control laydate width-datetime"
+							dataFormat="datetime" data-type="datetime" data-format="yyyy-MM-dd HH:mm"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密码修改记录')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdUpdateRecord" maxlength="1000" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestion" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题答案')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestionAnswer" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题2')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestion2" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题答案2')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestionAnswer2" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题3')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestion3" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密保问题答案3')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestionAnswer3" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密码问题修改时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="pwdQuestUpdateDate" readonly="true" maxlength="20" class="form-control laydate width-datetime"
+							dataFormat="datetime" data-type="datetime" data-format="yyyy-MM-dd HH:mm"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('最后登陆IP')}：</label>
+					<div class="control-inline">
+						<#form:input path="lastLoginIp" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('最后登陆时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="lastLoginDate" readonly="true" maxlength="20" class="form-control laydate width-datetime"
+							dataFormat="datetime" data-type="datetime" data-format="yyyy-MM-dd HH:mm"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('冻结时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="freezeDate" readonly="true" maxlength="20" class="form-control laydate width-datetime"
+							dataFormat="datetime" data-type="datetime" data-format="yyyy-MM-dd HH:mm"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('冻结原因')}：</label>
+					<div class="control-inline">
+						<#form:input path="freezeCause" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户权重')}：</label>
+					<div class="control-inline">
+						<#form:input path="userWeight" maxlength="6" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control isQuick"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('年龄')}：</label>
+					<div class="control-inline">
+						<#form:input path="age" maxlength="10" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('身份证')}：</label>
+					<div class="control-inline">
+						<#form:input path="shenfz" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('政治面貌')}：</label>
+					<div class="control-inline">
+						<#form:input path="zhengzmm" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('民族')}：</label>
+					<div class="control-inline">
+						<#form:input path="minzu" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('信息类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="xinxitype" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("登录账号")}', name:'loginCode', index:'a.login_code', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/web/userStudent/form?userCode='+row.userCode+'" class="btnList" data-title="${text("编辑用户表")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("用户昵称")}', name:'userName', index:'a.user_name', width:150, align:"left"},
+		{header:'${text("登录密码")}', name:'password', index:'a.password', width:150, align:"left"},
+		{header:'${text("电子邮箱")}', name:'email', index:'a.email', width:150, align:"left"},
+		{header:'${text("手机号码")}', name:'mobile', index:'a.mobile', width:150, align:"left"},
+		{header:'${text("办公电话")}', name:'phone', index:'a.phone', width:150, align:"left"},
+		{header:'${text("用户性别")}', name:'sex', index:'a.sex', width:150, align:"left"},
+		{header:'${text("头像路径")}', name:'avatar', index:'a.avatar', width:150, align:"left"},
+		{header:'${text("个性签名")}', name:'sign', index:'a.sign', width:150, align:"left"},
+		{header:'${text("绑定的微信号")}', name:'wxOpenid', index:'a.wx_openid', width:150, align:"left"},
+		{header:'${text("绑定的手机串号")}', name:'mobileImei', index:'a.mobile_imei', width:150, align:"left"},
+		{header:'${text("用户类型")}', name:'userType', index:'a.user_type', width:150, align:"left"},
+		{header:'${text("用户类型引用编号")}', name:'refCode', index:'a.ref_code', width:150, align:"left"},
+		{header:'${text("用户类型引用姓名")}', name:'refName', index:'a.ref_name', width:150, align:"left"},
+		{header:'${text("管理员类型")}', name:'mgrType', index:'a.mgr_type', width:150, align:"left"},
+		{header:'${text("密码安全级别")}', name:'pwdSecurityLevel', index:'a.pwd_security_level', width:150, align:"center"},
+		{header:'${text("密码最后更新时间")}', name:'pwdUpdateDate', index:'a.pwd_update_date', width:150, align:"center"},
+		{header:'${text("密码修改记录")}', name:'pwdUpdateRecord', index:'a.pwd_update_record', width:150, align:"left"},
+		{header:'${text("密保问题")}', name:'pwdQuestion', index:'a.pwd_question', width:150, align:"left"},
+		{header:'${text("密保问题答案")}', name:'pwdQuestionAnswer', index:'a.pwd_question_answer', width:150, align:"left"},
+		{header:'${text("密保问题2")}', name:'pwdQuestion2', index:'a.pwd_question_2', width:150, align:"left"},
+		{header:'${text("密保问题答案2")}', name:'pwdQuestionAnswer2', index:'a.pwd_question_answer_2', width:150, align:"left"},
+		{header:'${text("密保问题3")}', name:'pwdQuestion3', index:'a.pwd_question_3', width:150, align:"left"},
+		{header:'${text("密保问题答案3")}', name:'pwdQuestionAnswer3', index:'a.pwd_question_answer_3', width:150, align:"left"},
+		{header:'${text("密码问题修改时间")}', name:'pwdQuestUpdateDate', index:'a.pwd_quest_update_date', width:150, align:"center"},
+		{header:'${text("最后登陆IP")}', name:'lastLoginIp', index:'a.last_login_ip', width:150, align:"left"},
+		{header:'${text("最后登陆时间")}', name:'lastLoginDate', index:'a.last_login_date', width:150, align:"center"},
+		{header:'${text("冻结时间")}', name:'freezeDate', index:'a.freeze_date', width:150, align:"center"},
+		{header:'${text("冻结原因")}', name:'freezeCause', index:'a.freeze_cause', width:150, align:"left"},
+		{header:'${text("用户权重")}', name:'userWeight', index:'a.user_weight', width:150, align:"center"},
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("年龄")}', name:'age', index:'a.age', width:150, align:"left"},
+		{header:'${text("身份证")}', name:'shenfz', index:'a.shenfz', width:150, align:"left"},
+		{header:'${text("政治面貌")}', name:'zhengzmm', index:'a.zhengzmm', width:150, align:"left"},
+		{header:'${text("民族")}', name:'minzu', index:'a.minzu', width:150, align:"left"},
+		{header:'${text("信息类型")}', name:'xinxitype', index:'a.xinxitype', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+			var actions = [];
+			//<% if(hasPermi('web:userStudent:edit')){ %>
+				actions.push('<a href="${ctx}/web/userStudent/form?userCode='+row.userCode+'" class="btnList" title="${text("编辑用户表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/web/userStudent/delete?userCode='+row.userCode+'" class="btnList" title="${text("删除用户表")}" data-confirm="${text("确认要删除该用户表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			//<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

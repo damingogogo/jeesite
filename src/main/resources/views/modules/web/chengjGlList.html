@@ -1,0 +1,113 @@
+<% var userType = isNotBlank(parameter.userType)?parameter.userType:'employee'; %>
+<% layout('/layouts/default.html', {title: '成绩管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('成绩管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<a href="#" class="btn btn-default" id="btnAddAdmin" title="${text('新增')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${chengjGl}" action="${ctx}/web/chengjGl/listData" method="post" class="form-inline "
+			data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<#form:hidden path="officeCode"/>
+			<div class="form-group">
+				<label class="control-label">${text('成绩类型')}：</label>
+				<div class="control-inline width-120">
+					<#form:select path="chengjType" dictType="chengji_type" blankOption="true" class="form-control"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('标题')}：</label>
+				<div class="control-inline">
+					<#form:input path="title" maxlength="100" class="form-control width-120"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('科目')}：</label>
+				<div class="control-inline">
+					<#form:input path="kemuName" maxlength="255" class="form-control width-120"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('用户名称')}：</label>
+				<div class="control-inline">
+					<#form:input path="userName" maxlength="255" class="form-control width-120"/>
+				</div>
+			</div>
+			<!--				<div class="form-group">-->
+			<!--					<label class="control-label">${text('office_code')}：</label>-->
+			<!--					<div class="control-inline">-->
+			<!--						<#form:input path="officeCode" maxlength="255" class="form-control width-120"/>-->
+			<!--					</div>-->
+			<!--				</div>-->
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+				<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+			</div>
+		</#form:form>
+		<table id="dataGrid"></table>
+		<div id="dataGridPage"></div>
+	</div>
+</div>
+</div>
+<div class="hide"><#form:listselect id="userSelect" title="${text('科目选择')}"
+	url="${ctx}/web/kemuSelect" allowClear="false"
+	checkbox="true" itemCode="subjectId" itemName="subjectName"/></div>
+<% } %>
+<script>
+	// 初始化DataGrid对象
+	$('#dataGrid').dataGrid({
+		searchForm: $("#searchForm"),
+		columnModel: [
+			{header:'${text("成绩类型")}', name:'chengjType', index:'a.chengj_type', width:150, align:"left", formatter: function(val, obj, row, act){
+					return '<a href="${ctx}/web/chengjGl/form?chengjId='+row.chengjId+'" class="btnList" data-title="${text("编辑成绩管理")}">'+(val||row.id)+'</a>';
+				}},
+			{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left"},
+			{header:'${text("分数")}', name:'extend3', index:'a.extend3', width:150, align:"left"},
+			// {header:'${text("kemu_id")}', name:'kemuId', index:'a.kemu_id', width:150, align:"left"},
+			{header:'${text("科目名")}', name:'kemuName', index:'a.kemu_name', width:150, align:"left"},
+			// {header:'${text("login_code")}', name:'loginCode', index:'a.login_code', width:150, align:"left"},
+			{header:'${text("名称")}', name:'userName', index:'a.user_name', width:150, align:"left"},
+			{header:'${text("班级")}', name:'extend1', index:'a.extend1', width:150, align:"left"},
+			// {header:'${text("user_code")}', name:'userCode', index:'a.user_code', width:150, align:"left"},
+			// {header:'${text("office_code")}', name:'officeCode', index:'a.office_code', width:150, align:"left"},
+			// {header:'${text("成绩文件")}', name:'chengjWenjian', index:'a.chengj_wenjian', width:150, align:"left"},
+			{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+			{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+					var actions = [];
+					//<% if(hasPermi('web:chengjGl:edit')){ %>
+					actions.push('<a href="${ctx}/web/chengjGl/form?chengjId='+row.chengjId+'" class="btnList" title="${text("编辑成绩管理")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+					actions.push('<a href="${ctx}/web/chengjGl/delete?chengjId='+row.chengjId+'" class="btnList" title="${text("删除成绩管理")}" data-confirm="${text("确认要删除该成绩管理吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+					//<% } %>
+					return actions.join('');
+				}}
+		],
+		// 加载成功后执行事件
+		ajaxSuccess: function(data){
+
+		}
+	});
+	$('#btnAddAdmin').click(function(){
+		$('#userSelectDiv').attr('data-url', '${ctx}/web/chengjGl/kemuSelect');
+		$('#userSelectCode').val('');
+		$('#userSelectName').val('').click();
+	});
+
+	function listselectCallback(id, action, index, layero){
+		if (id == 'userSelect' && action == 'ok'){
+			if ($('#userSelectCode').val() != ''){
+				js.addTabPage(null, '科目选择',
+						'${ctx}/web/chengjGl/form?subjectIds='
+						+$('#userSelectCode').val());
+			}else{
+				js.showMessage('请选择科目！');
+			}
+		}
+	}
+</script>

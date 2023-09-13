@@ -1,0 +1,903 @@
+<% layout('/layouts/default.html', {title: '11222', bodyClass: '', libs: ['dataGrid']}){ %>
+<!-- <link rel="stylesheet" href="${ctxStatic}/modules/sys/sysDesktop.css?${_version}"> -->
+<div class="content pb0 dashboard-box">
+            <div class="form-group" style="display: flex;">
+                <label class="control-label">${text('数据天数(天)')}：</label>
+                <div class="control-inline width-120">
+                  <#form:select path="shujuDay"  blankOption="true" class="form-control"/>
+                </div>
+            </div>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box distribution">
+                <div class="col-sm-12 titleStyle">报名数据类型统计</div>
+                <div class="col-sm-12 paddingUnset">
+                    <div id="pieChart" class="pieChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box distribution">
+                <div class="col-sm-12 titleStyle">填表数据类型统计</div>
+                <div class="col-sm-12 paddingUnset">
+                    <div id="barChart" class="barChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box distribution">
+                <div class="col-sm-12 titleStyle">公告数据类型统计</div>
+                <div class="col-sm-12 paddingUnset">
+                    <div id="dashboardChart" class="dashboardChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box distribution">
+                <div class="col-sm-12 titleStyle">投票数据类型统计</div>
+                <div class="col-sm-12 paddingUnset">
+                    <div id="barChart1" class="barChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box reportSit">
+                <div class="col-md-4 paddingUnset">
+                    <div class="col-sm-12 reportState paddingUnset overtimeReport">
+                        <div class="col-sm-12 reportImg">
+                            <img src="/js/static/images/YingSBRW.png">
+                        </div>
+                        <div class="col-sm-12 paddingUnset ">
+                            <!--							<div class="col-sm-12">超时</div>-->
+                            <div class="col-sm-12">报名统计</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-sm-12 reportTitle">报名数据</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="baomingsj">0</span>条
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-sm-12 reportTitle">报名统计数</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="baomingtjs">0</span>条
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box reportSit">
+                <div class="col-md-4 paddingUnset">
+                    <div class="col-sm-12 reportState paddingUnset waitReport">
+                        <div class="col-sm-12 reportImg">
+                            <img src="/js/static/images/YingSBRW.png">
+                        </div>
+                        <div class="col-sm-12 paddingUnset ">
+                            <div class="col-sm-12">填表统计</div>
+                            <!--							<div class="col-sm-12">任务</div>-->
+                        </div>
+                    </div>
+                </div>
+                <!--				<div class="col-md-2">-->
+                <!--					<div class="col-sm-12 reportTitle">当月</div>-->
+                <!--					<div class="col-sm-12 reportData">-->
+                <!--						<span id="waitReportInMonthNum">0</span>条-->
+                <!--					</div>-->
+                <!--				</div>-->
+                <div class="col-md-3">
+                    <div class="col-sm-12 reportTitle">填表数据</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="tianbiaosj">0</span>条
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-sm-12 reportTitle">填表统计数</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="tianbiaotjs">0</span>条
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box reportSit ">
+                <div class="col-md-4 paddingUnset">
+                    <div class="col-sm-12 reportState paddingUnset alreadyReport">
+                        <div class="col-sm-12 reportImg">
+                            <img src="/js/static/images/YingSBRW.png">
+                        </div>
+                        <div class="col-sm-12 paddingUnset ">
+                            <div class="col-sm-12">投票统计</div>
+                            <!--							<div class="col-sm-12">任务</div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-sm-12 reportTitle">投票数据</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="toupiaosj">0</span>条
+                    </div>
+                </div>
+                <div class="col-md-4" style="padding: 10px">
+                    <div class="col-sm-12 reportTitle">投票统计数</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="toupiaotjs">0</span>条
+                    </div>
+                </div>
+                <!--				<div class="col-md-2">-->
+                <!--					<div class="col-sm-12 reportTitle">当年</div>-->
+                <!--					<div class="col-sm-12 reportData">-->
+                <!--						<span id="reportedInYearNum">0</span>条-->
+                <!--					</div>-->
+                <!--				</div>-->
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 paddingAdjust">
+            <div class="info-box reportSit">
+                <div class="col-md-4 paddingUnset">
+                    <div class="col-sm-12 reportState paddingUnset shouldReport">
+                        <div class="col-sm-12 reportImg">
+                            <img src="/js/static/images/YingSBRW.png">
+                        </div>
+                        <div class="col-sm-12 paddingUnset ">
+                            <div class="col-sm-12">公告统计</div>
+                            <!--							<div class="col-sm-12">任务</div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-sm-12 reportTitle">公告数据</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="gonggsj">0</span>条
+                    </div>
+                </div>
+                <div class="col-md-4" style="padding: 10px">
+                    <div class="col-sm-12 reportTitle">公告统计数</div>
+                    <div class="col-sm-12 reportData">
+                        <span id="gonggtjs">0</span>条
+                    </div>
+                </div>
+                <!--				<div class="col-md-2">-->
+                <!--					<div class="col-sm-12 reportTitle">当年</div>-->
+                <!--					<div class="col-sm-12 reportData">-->
+                <!--						<span id="shoudReportInYearNum">0</span>条-->
+                <!--					</div>-->
+                <!--				</div>-->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12 paddingAdjust">
+            <div class="info-box reportTable">
+                <table id="sysDataGrid"></table>
+                <div id="sysDataGridPage"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+<script src="${ctxStatic}/echarts/4.2/echarts.min.js"></script>
+<script>
+    document.getElementById('shujuDay').onchange = function(){
+        js.loading('加载中...');
+        dataGridInit(this.value);
+        pieChartInit(this.value);
+        barChartInit(this.value);
+        barChart1Init(this.value);
+        dashboardChartInit(this.value)
+        reportNum(this.value);
+        // dataGridInit(this.value);
+    }
+
+    var assignData = {
+        "allInd": 7652,
+        // "otherInd":0,
+        // "businessUnitNum":0
+    };
+    $(function () {
+        $("#shujuDay").append(getOption());
+        pieChartInit(0);
+        barChartInit(0);
+        barChart1Init(0);
+        dashboardChartInit(0);
+        dataGridInit(0);
+        assignment();
+        reportNum(0);
+    });
+    function getOption() {
+        var options = "";
+        for (var i = 0; i <=30; i++) {
+            options += "<option  value='" + i + "'>" + i + "</option>";
+        }
+        console.log(options)
+        return options;
+    }
+    function assignment() {
+        $('#allInd').html(assignData.allInd);
+        // $('#otherInd').html(assignData.otherInd);
+        // $('#businessUnitNum').html(assignData.businessUnitNum);
+    }
+
+    function dataGridInit(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/gongg/listData';
+        }else {
+            url='${ctx}/web/gongg/listData?shujuDay='+val;
+        }
+        $('#sysDataGrid').dataGrid({
+            url: url,
+            mtype: "get",
+            datatype: "json",
+            postData: {},
+            page: 1,	// 当前页码
+            rowNum: 20, // 每页显示的条数
+            columnModel: [
+                {header: '${text("标题")}', name: 'title', index: 'a.title', width: 150, align: "left"},
+                {header: '${text("内容")}', name: 'content', index: 'a.content', width: 150, align: "left"},
+                {
+                    header: '${text("文件")}',
+                    name: 'extend1',
+                    index: 'a.wenjian',
+                    width: 150,
+                    align: "left",
+                    formatter: function (val, obj, row, act) {
+                        return '<a href="' + row.wenjian + '"   target="_blank" data-title="${text("文档下载")}">' + (val || row.id) + '</a>';
+                    }
+                },
+                {
+                    header: '${text("公告类型")}',
+                    name: 'gonggType',
+                    index: 'a.gongg_type',
+                    width: 150,
+                    align: "left",
+                    formatter: function (val, obj, row, act) {
+                        return js.getDictLabel(${@DictUtils.getDictListJson('gongg_type')}, val, '${text("未知")}', true);
+                    }
+                },
+                // {header:'${text("回应状态")}', name:'huiyingType', index:'a.huiying_type', width:150, align:"center", formatter: function(val, obj, row, act){
+                // 	return js.getDictLabel(${@DictUtils.getDictListJson('huiying_type')}, val, '${text("未知")}', true);
+                // }},
+                {header: '${text("创建时间")}', name: 'createDate', index: 'a.createDate', width: 150, align: "left"},
+                {header: '${text("更新时间")}', name: 'updateDate', index: 'a.update_date', width: 150, align: "center"}
+            ],
+            // 加载成功后执行事件
+            ajaxSuccess: function (data) {
+                console.info(data)
+                return data.list
+            }
+        });
+    }//时间戳转日期
+    function formatDate(value) {
+        var date = new Date(value);
+        var y = date.getFullYear(),
+            m = date.getMonth() + 1,
+            d = date.getDate(),
+            h = date.getHours(),
+            i = date.getMinutes(),
+            s = date.getSeconds();
+        if (m < 10) {
+            m = '0' + m;
+        }
+        if (d < 10) {
+            d = '0' + d;
+        }
+        if (h < 10) {
+            h = '0' + h;
+        }
+        if (i < 10) {
+            i = '0' + i;
+        }
+        if (s < 10) {
+            s = '0' + s;
+        }
+        var t = y + '-' + m + '-' + d;
+        return t;
+    }
+
+    function pieChartInit(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=1';
+        }else {
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=1&shujuDay='+val;
+        }
+        var data = {
+            pSum: 0,
+            sData: []
+        };
+        $.ajax({
+            method: 'POST',
+            url: url,
+            async: false,
+            dataType: 'json',
+            success: function (dataArr) {
+                for (var i = 0; i < dataArr.length; i++) {
+                    var row = {
+                        value: 0, name: ''
+                    };
+                    row.value = dataArr[i].ind;
+                    row.name = dataArr[i].office_name;
+                    data.pSum += dataArr[i].ind;
+                    data.sData.push(row);
+                }
+                // assignData.otherInd = data.pSum;
+                // assignData.businessUnitNum = dataArr.length;
+            }
+        });
+        echartsInit("pieChart", data)
+    }
+
+    function barChartInit(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=2';
+        }else {
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=2&shujuDay='+val;
+        }
+        var data = {
+            legendData: ['填表数'],
+            xAxisData: [],
+            sData1: [],
+            sData2: []
+        };
+        $.ajax({
+            method: 'POST',
+            url: url,
+            async: false,
+            dataType: 'json',
+            success: function (dataArr) {
+                for (var i = 0; i < dataArr.length; i++) {
+                    data.xAxisData.push(dataArr[i].office_name);
+                    data.sData1.push(dataArr[i].ind);
+                    // data.sData2.push(dataArr[i].ind);
+                }
+            }
+        });
+        echartsInit("barChart", data)
+    }
+
+    function barChart1Init(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=3';
+        }else {
+            url='${ctx}/web/baomingGl/getBaomingInd?btType=3&shujuDay='+val;
+        }
+        var data = {
+            legendData1: ['投票数'],
+            xAxisData1: [],
+            sData11: [],
+        };
+        $.ajax({
+            method: 'POST',
+            url: url,
+            async: false,
+            dataType: 'json',
+            success: function (dataArr) {
+                for (var i = 0; i < dataArr.length; i++) {
+                    data.xAxisData1.push(dataArr[i].office_name);
+                    data.sData11.push(dataArr[i].ind);
+                    // data.sData2.push(dataArr[i].ind);
+                }
+            }
+        });
+        echartsInit("barChart1", data)
+    }
+
+    //获取指标频率分布数据
+    function dashboardChartInit(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/gongg/getGonggInd';
+        }else {
+            url='${ctx}/web/gongg/getGonggInd?shujuDay='+val;
+        }
+        var data = {
+            pSum1: 0,
+            sData1: []
+        };
+        $.ajax({
+            method: 'POST',
+            url: url,
+            async: false,
+            dataType: 'json',
+            success: function (dataArr) {
+                for (var i = 0; i < dataArr.length; i++) {
+                    var row = {
+                        value: 0, name: ''
+                    };
+                    row.value = dataArr[i].ind;
+                    row.name = dataArr[i].office_name;
+                    data.pSum1 += dataArr[i].ind;
+                    data.sData1.push(row);
+                }
+                // assignData.otherInd = data.pSum;
+                // assignData.businessUnitNum = dataArr.length;
+            }
+        });
+        echartsInit("dashboardChart", data)
+    }
+
+    function reportNum(val) {
+        var url ="";
+        if (val===0){
+            url='${ctx}/web/baomingGl/countTotal';
+        }else {
+            url='${ctx}/web/baomingGl/countTotal?shujuDay='+val;
+        }
+        $.ajax({
+            method: 'POST',
+            url: url,
+            async: true,
+            dataType: 'json',
+            success: function (data) {
+                $('#baomingsj').html(data.baomingsj);
+                $('#baomingtjs').html(data.baomingtjs);
+                $('#toupiaosj').html(data.toupiaosj);
+                $('#toupiaotjs').html(data.toupiaotjs);
+                $('#gonggsj').html(data.gonggsj);
+                $('#gonggtjs').html(data.gonggtjs);
+                $('#tianbiaosj').html(data.tianbiaosj);
+                $('#tianbiaotjs').html(data.tianbiaotjs);
+                js.closeLoading(1000, true);
+            }
+        });
+    }
+
+    function echartsInit(id, data) {
+        var option = null
+        var myChart = null
+        switch (id) {
+            case "pieChart":
+                option = pieOption(data);
+                break;
+            case "barChart":
+                option = barOption(data);
+                break;
+            case "barChart1":
+                option = barOption1(data);
+                break;
+            case "dashboardChart":
+                option = radarOption(data);
+                break;
+        }
+        if (option != null) {
+            myChart = echarts.init(document.getElementById(id), 'default');
+            myChart.setOption(option)
+        }
+    }
+
+    function pieOption(data) {
+        var option = {
+            color: ['#B49FE0', '#08A2A2', '#5BB0F0', '#E6CD0E', '#DC69AC', '#94716F', '#D97A80', '#FFB97E', '#97B553', '#2DC7C7'],
+            tooltip: {
+                trigger: 'item'
+            },
+            title: {
+                text: '{a|' + data.pSum + '}{c|条}\n{d|报名数据总数}',
+                left: '29%',
+                top: '40%',
+                textAlign: 'center',
+                textStyle: {
+                    rich: {
+                        a: {
+                            fontSize: 22,
+                            color: '#29EEF3',
+                            verticalAlign: "bottom"
+                        },
+
+                        c: {
+                            fontSize: 14,
+                            verticalAlign: "middle",
+                            color: '#29EEF3'
+                        },
+                        d: {
+                            fontSize: 14,
+                            verticalAlign: "bottom",
+                            color: '#000000'
+                        }
+                    }
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                top: 'middle',
+                left: "65%",
+                align: "right",
+                itemGap: 0,
+                textStyle: {
+                    fontSize: "14"
+                }
+            },
+            series: [
+                {
+                    name: '报名统计',
+                    type: 'pie',
+                    left: 80,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    radius: ['45%', '70%'],
+                    center: ['30%', '50%'],
+                    //数据文字内部展示
+                    label: {
+                        show: true,
+                        position: "inside",
+                        formatter: `{c}`,
+                    },
+                    // label: {
+                    // 	show: false,
+                    // 	position: 'center'
+                    // },
+                    emphasis: {
+                        label: {
+                            show: false,
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: data.sData
+                }
+            ]
+        };
+        return option;
+    }
+
+    function barOption(data) {
+        var option = {
+            color: ['#4196FF', '#E9842B'],
+            tooltip: {
+                trigger: 'axis',
+            },
+            grid: {
+                bottom: '25%',
+                top: '20%',
+                left: '10%',
+                right: '9%'
+            },
+            legend: {
+                bottom: "3%",
+                data: data.legendData
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    axisLabel: {
+                        interval: 0,
+                        formatter: function (value, index) {
+                            if (value.replace(/[^\x00-\xff]/g, "**").length > 9) {
+                                if (value.substring(4, value.length).replace(/[^\x00-\xff]/g, "**").length > 9) {
+                                    return value.substring(0, 4) + "\n" + value.substring(4, 8) + "\n" + value.substring(8, value.length)
+                                }
+                                return value.substring(0, 4) + "\n" + value.substring(4, value.length)
+                            }
+                            return value;
+                        }
+                    },
+                    data: data.xAxisData,
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            color: '#F1F1F1'
+
+                        }
+                    },
+                    name: '填表数(条)',
+                },
+                {
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            color: '#F1F1F1'
+
+                        }
+                    },
+                    // name: '指标数(条)',
+                }
+            ],
+            series: [
+                {
+                    name: '填表数',
+                    type: 'bar',
+                    barWidth: 20,
+                    data: data.sData1
+                },
+                // {
+                // 	name: '指标数',
+                // 	type: 'line',
+                // 	yAxisIndex:1,
+                // 	data:data.sData2
+                // }{
+                // 	name: '指标数',
+                // 	type: 'line',
+                // 	yAxisIndex:1,
+                // 	data:data.sData2
+                // }
+            ]
+        };
+        return option
+    }
+
+    function barOption1(data) {
+        var option = {
+            color: ['#4196FF', '#E9842B'],
+            tooltip: {
+                trigger: 'axis',
+            },
+            grid: {
+                bottom: '25%',
+                top: '20%',
+                left: '10%',
+                right: '9%'
+            },
+            legend: {
+                bottom: "3%",
+                data: data.legendData1
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    axisLabel: {
+                        interval: 0,
+                        formatter: function (value, index) {
+                            if (value.replace(/[^\x00-\xff]/g, "**").length > 9) {
+                                if (value.substring(4, value.length).replace(/[^\x00-\xff]/g, "**").length > 9) {
+                                    return value.substring(0, 4) + "\n" + value.substring(4, 8) + "\n" + value.substring(8, value.length)
+                                }
+                                return value.substring(0, 4) + "\n" + value.substring(4, value.length)
+                            }
+                            return value;
+                        }
+                    },
+                    data: data.xAxisData1,
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            color: '#F1F1F1'
+
+                        }
+                    },
+                    name: '投票数(条)',
+                },
+                {
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            color: '#F1F1F1'
+
+                        }
+                    },
+                    // name: '指标数(条)',
+                }
+            ],
+            series: [
+                {
+                    name: '投票数',
+                    type: 'bar',
+                    barWidth: 20,
+                    data: data.sData11
+                },
+                // {
+                // 	name: '指标数',
+                // 	type: 'line',
+                // 	yAxisIndex:1,
+                // 	data:data.sData2
+                // }{
+                // 	name: '指标数',
+                // 	type: 'line',
+                // 	yAxisIndex:1,
+                // 	data:data.sData2
+                // }
+            ]
+        };
+        return option
+    }
+
+    function radarOption(data) {
+        var option = {
+            color: ['#5BB0F0', '#E6CD0E', '#DC69AC', '#94716F', '#D97A80', '#FFB97E', '#97B553', '#2DC7C7', '#08A2A2', '#B49FE0'],
+            tooltip: {
+                trigger: 'item'
+            },
+            title: {
+                text: '{a|' + data.pSum1 + '}{c|条}\n{d|公告总数}',
+                left: '29%',
+                top: '40%',
+                textAlign: 'center',
+                textStyle: {
+                    rich: {
+                        a: {
+                            fontSize: 22,
+                            color: '#29EEF3',
+                            verticalAlign: "bottom"
+                        },
+
+                        c: {
+                            fontSize: 14,
+                            verticalAlign: "middle",
+                            color: '#29EEF3'
+                        },
+                        d: {
+                            fontSize: 14,
+                            verticalAlign: "bottom",
+                            color: '#000000'
+                        }
+                    }
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                top: 'middle',
+                left: "65%",
+                align: "right",
+                itemGap: 0,
+                textStyle: {
+                    fontSize: "14"
+                }
+            },
+            series: [
+                {
+                    name: '公告统计',
+                    type: 'pie',
+                    left: 80,
+                    top: 0,
+                    right: 0,
+                    bottom: 10,
+                    radius: ['45%', '70%'],
+                    center: ['30%', '50%'],
+                    //数据文字内部展示
+                    label: {
+                        show: true,
+                        position: "inside",
+                        formatter: `{c}`,
+                    },
+                    // label: {
+                    // 	show: false,
+                    // 	position: 'center'
+                    // },
+                    emphasis: {
+                        label: {
+                            show: false,
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: data.sData1
+                }
+            ]
+        };
+        return option;
+    }
+
+</script>
+<style>
+    .dashboard-box .paddingAdjust {
+        padding-right: 8px !important;
+        padding-left: 6px !important;
+    }
+
+    .dashboard-box .paddingAdjust .reportState {
+        height: 25vh;
+        padding: unset !important;
+        color: #FFF8F7;
+        font-size: 15px;
+        border-radius: 6px;
+        font-weight: bolder;
+    }
+
+    .dashboard-box .paddingAdjust .overtimeReport {
+        background-color: #E95555;
+    }
+
+    .dashboard-box .paddingAdjust .waitReport {
+        background-color: #4196FF;
+    }
+
+    .dashboard-box .paddingAdjust .alreadyReport {
+        background-color: #7DC67D;
+    }
+
+    .dashboard-box .paddingAdjust .shouldReport {
+        background-color: #F6B443;
+    }
+
+    .dashboard-box .paddingUnset {
+        padding: unset !important;
+    }
+
+    .dashboard-box .pieFont {
+        font-size: 1vw;
+        padding: 3px;
+        padding-left: 10px;
+    }
+
+    .dashboard-box .pieFont > span {
+        color: #4196FF;
+    }
+
+    .dashboard-box .titleStyle {
+        color: #4196FF;
+        font-size: 1.2vw;
+        font-weight: bold;
+        padding: 3px;
+        padding-left: 10px;
+    }
+
+    .dashboard-box .distribution {
+        height: 315px;
+        width: 100%;
+    }
+
+    .dashboard-box .distribution .pieChart {
+        height: 280px;
+        width: 100%;
+        /*height: 200px;*/
+        /*right: 65px;*/
+        /*width: 515px;*/
+    }
+
+    .dashboard-box .distribution .dashboardChart {
+        height: 280px;
+        width: 100%;
+    }
+
+    .dashboard-box .distribution .barChart {
+        height: 280px;
+        width: 100%;
+    }
+
+    .dashboard-box .reportSit {
+        min-height: 25vh;
+    }
+
+    .dashboard-box .reportSit > div {
+        min-height: 25vh;
+        padding: unset !important;
+    }
+
+    .dashboard-box .reportSit > div > div {
+        text-align: center;
+        font-size: 1vw;
+        padding: unset !important;
+    }
+
+    .dashboard-box .reportSit .reportImg {
+        height: 13vh;
+        line-height: 15vh;
+    }
+
+    .dashboard-box .reportSit .reportTitle {
+        height: 14vh;
+        line-height: 8;
+    }
+
+    .dashboard-box .reportSit .reportData {
+        color: #E95555;
+    }
+
+    .dashboard-box .reportSit .reportData > span {
+        font-size: 1.2vw;
+        font-weight: bold;
+    }
+
+    .dashboard-box .reportTable {
+        height: 300px;
+    }
+
+</style>

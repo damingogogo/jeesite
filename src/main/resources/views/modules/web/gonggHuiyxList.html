@@ -1,0 +1,91 @@
+<% layout('/layouts/default.html', {title: '回应型公告', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('回应型公告')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('web:gongg:edit')){ %>
+<!--					<a href="${ctx}/web/gongg/form" class="btn btn-default btnTool" title="${text('新增公告表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>-->
+				<% } %>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${gongg}" action="${ctx}/web/gongg/listData" method="post" class="form-inline "
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<#form:hidden path="gonggType"/>
+				<div class="form-group">
+					<label class="control-label">${text('标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="title" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('内容')}：</label>
+					<div class="control-inline">
+						<#form:input path="content" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+
+		{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left"},
+		{header:'${text("内容")}', name:'content', index:'a.content', width:150, align:"left"},
+		{header:'${text("文件")}', name:'extend1', index:'a.wenjian', width:150, align:"left",formatter: function(val, obj, row, act){
+				return '<a href="'+row.wenjian+'"   target="_blank" data-title="${text("文档下载")}">'+(val||row.id)+'</a>';
+			}},
+		// {header:'${text("公告类型")}', name:'gonggType', index:'a.gongg_type', width:150, align:"left",  formatter: function(val, obj, row, act){
+		// 		return '<a href="${ctx}/web/gongg/form?id='+row.id+'" class="btnList" data-title="${text("编辑公告表")}">'+(val||row.id)+'</a>';
+		// 	}},
+		{header:'${text("回应状态")}', name:'huiyingType', index:'a.huiying_type', width:150, align:"center", formatter: function(val, obj, row, act){
+				if (row.huiyingType == "1"){
+				return '<a href="${ctx}/web/gonggHuiy/list" class="btnList" data-title="${text("公告回应")}">'+js.getDictLabel(${@DictUtils.getDictListJson('huiying_type')}, val, '${text("未知")}', true)+'</a>';
+				}else {
+					return js.getDictLabel(${@DictUtils.getDictListJson('huiying_type')}, val, '${text("未知")}', true);
+				}
+
+		}},
+		{header:'${text("创建时间")}', name:'createDate', index:'a.createDate', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		// {header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+		// 	return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		// }},
+
+		{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+			var actions = [];
+			//<% if(hasPermi('web:gongg:edit')){ %>
+				actions.push('<a href="${ctx}/web/gongg/form?id='+row.id+'" class="btnList" title="${text("编辑公告")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/web/gonggHuiy/form?gonggId='+row.id+'" class="btnList" title="${text("公告回应")}"><i class="fa fa-file"></i></a>&nbsp;');
+				// if (row.status == Global.STATUS_NORMAL){
+				// 	actions.push('<a href="${ctx}/web/gongg/disable?id='+row.id+'" class="btnList" title="${text("停用公告")}" data-confirm="${text("确认要停用该公告吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				// } else if (row.status == Global.STATUS_DISABLE){
+				// 	actions.push('<a href="${ctx}/web/gongg/enable?id='+row.id+'" class="btnList" title="${text("启用公告")}" data-confirm="${text("确认要启用该公告吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				// }
+				// actions.push('<a href="${ctx}/web/gongg/delete?id='+row.id+'" class="btnList" title="${text("删除公告")}" data-confirm="${text("确认要删除该公告吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			//<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

@@ -1,0 +1,125 @@
+<% var userType = isNotBlank(parameter.userType)?parameter.userType:'employee'; %>
+<% layout('/layouts/default.html', {title: '投票管理管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('投票管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('web:baomingGl:edit')){ %>
+<!--					<a href="${ctx}/web/baomingGl/form" class="btn btn-default btnTool" title="${text('新增投票管理')}"><i class="fa fa-plus"></i> ${text('新增')}</a>-->
+				<% } %>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${baomingGl}" action="${ctx}/web/baomingGl/listDataTp?btType=3" method="post" class="form-inline "
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<#form:hidden path="toupId"/>
+				<div class="form-group">
+					<label class="control-label">${text('投票类型')}：</label>
+					<div class="control-inline width-120">
+						<#form:select  path="baomingType" dictType="toupiao_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+<!--				<div class="form-group">-->
+<!--					<label class="control-label">${text('投票状态')}：</label>-->
+<!--					<div class="control-inline width-120">-->
+<!--						<#form:select path="baomingStatus" dictType="" blankOption="true" class="form-control"/>-->
+<!--					</div>-->
+<!--				</div>-->
+				<div class="form-group">
+					<button id="chaxun" type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<div class="hide"><#form:listselect id="userSelect" title="${text('选择')}"
+	url="${ctx}/web/btoupiaoUser/UserSelect" allowClear="false"
+	checkbox="false" itemCode="btpId" itemName="userName"/></div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		// {header:'${text("投票序号")}', name:'baomingXuhao', index:'a.baoming_xuhao', width:150, align:"left", formatter: function(val, obj, row, act){
+		// 	return '<a href="${ctx}/web/baomingGl/form?baomingId='+row.baomingId+'" class="btnList" data-title="${text("编辑投票管理")}">'+(val||row.id)+'</a>';
+		// }},
+		// {header:'${text("id")}', name:'baomingId', index:'a.baoming_id', width:150, align:"left"},
+		{header:'${text("投票标题")}', name:'title', index:'a.title', width:150, align:"left"},
+		{header:'${text("投票内容")}', name:'content', index:'a.content', width:150, align:"left"},
+		{header:'${text("投票类型")}', name:'baomingType', index:'a.baoming_type', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('toupiao_type')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("投票文件")}', name:'extend1', index:'a.baoming_wenjian', width:150, align:"left", formatter: function(val, obj, row, act){
+				return '<a href="'+row.baomingWenjian+'"   target="_blank" data-title="${text("文档下载")}">'+(val||row.extend1)+'</a>';
+			}},
+		// {header:'${text("投票状态")}', name:'baomingStatus', index:'a.baoming_status', width:150, align:"center", formatter: function(val, obj, row, act){
+		// 	return js.getDictLabel(${@DictUtils.getDictListJson('baoming_status')}, val, '${text("未知")}', true);
+		// }},
+		// {header:'${text("被投票人")}', name:'userName', index:'a.user_name', width:150, align:"left"},
+		// {header:'${text("投票详情")}', name:'baomingXq', index:'a.baoming_xq', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("状态")}', name:'zt', index:'a.zt', width:150, align:"center", formatter: function(val, obj, row, act){
+			var zt="";
+			if (val==="1"){
+				zt="已投票"
+			}else {
+				zt="未投票"
+			}
+			return zt;
+		}},
+		{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+			var actions = [];
+			//<% if(hasPermi('web:baomingGl:edit')){ %>
+			// 	actions.push('<a href="${ctx}/web/baomingGl/baomingStastic?extend2=1&btType=3&baomingId='+row.id+'" class="btnList" title="${text("投票")}" data-confirm="${text("确认要投票吗？")}">' +
+			// 			'<i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				if (row.zt==="1"){
+
+				}else {
+					actions.push('<a href="#" onclick="btnAddAdmin(\''+row.baomingId+'\')">' +
+							'<i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+
+			//<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+
+	}
+});
+
+function btnAddAdmin(baomingId){
+	$('#userSelectDiv').attr('data-url', '${ctx}/web/btoupiaoUser/UserSelect?toupiaoId='+baomingId);
+	$('#toupId').val(baomingId);
+	$('#userSelectCode').val('');
+	$('#userSelectName').val('').click();
+};
+function listselectCallback(id, action, index, layero){
+	var toupId = $('#toupId').val();
+	if (id == 'userSelect' && action == 'ok'){
+		// debugger
+		if ($('#userSelectCode').val() != ''){
+			js.addTabPage(null, '投票的用户',
+					'${ctx}/web/baomingGl/baomingStastic?extend2=1&btType=3&baomingId='+toupId+'&extend8='
+					+$('#userSelectCode').val());
+			js.closeCurrentTabPage();
+			js.showMessage("投票成功!","", "success");
+			window.location.reload();
+		}else{
+			js.showMessage('请选择需要投票的用户');
+		}
+
+	}
+	// open(location, '_self').close();
+}
+</script>

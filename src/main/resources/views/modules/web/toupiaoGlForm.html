@@ -1,0 +1,175 @@
+<% layout('/layouts/default.html', {title: '投票管理管理', libs: ['validate','fileupload','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa icon-note"></i> ${text(baomingGl.isNewRecord ? '新增投票管理' : '编辑投票管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${baomingGl}" action="${ctx}/web/baomingGl/save" method="post" class="form-horizontal">
+		<div class="box-body">
+			<div class="form-unit">${text('基本信息')}</div>
+			<#form:hidden path="baomingId"/>
+			<#form:hidden path="btType"/>
+			<#form:hidden path="extend2"/>
+			<#form:hidden path="userCodes"/>
+			<div class="row">
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required ">*</span> ${text('投票编码')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:input path="extend3" maxlength="100" class="form-control"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('投票标题')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:input path="title" maxlength="100" class="form-control"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('投票内容')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:input path="content" maxlength="100" class="form-control"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required">*</span> ${text('投票类型')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:select path="baomingType" dictType="toupiao_type" blankOption="true" class="form-control" />
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('投票描述')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:input path="baomingMs" maxlength="100" class="form-control"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required ">*</span> ${text('投票状态')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:select path="baomingStatus" dictType="baoming_status" blankOption="true" class="form-control" />
+						</div>
+					</div>
+				</div>
+<!--				<div class="col-xs-6">-->
+<!--					<div class="form-group">-->
+<!--						<label class="control-label col-sm-4" title="">-->
+<!--							<span class="required hide">*</span> ${text('投票详情')}：<i class="fa icon-question hide"></i></label>-->
+<!--						<div class="col-sm-8">-->
+<!--							<#form:input path="baomingXq" maxlength="100" class="form-control"/>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--				</div>-->
+			</div>
+			<div class="row">
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label class="control-label col-sm-4" title="">
+							<span class="required hide">*</span> ${text('投票文件')}：<i class="fa icon-question hide"></i></label>
+						<div class="col-sm-8">
+							<#form:fileupload id="baomingWenjian" returnPath="true"
+							filePathInputId="baomingWenjian" fileNameInputId="extend1"
+							uploadType="all" readonly="false" maxUploadNum="3" isMini="false"/>
+							<#form:input type="hidden" path="baomingWenjian" class="form-control"/>
+							<#form:input type="hidden" path="extend1" class="form-control"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-unit">${text('投票人信息')}</div>
+			<table id="dataGrid"></table>
+		</div>
+		<div class="box-footer">
+			<div class="row">
+				<div class="col-sm-offset-2 col-sm-10">
+					<% if (hasPermi('web:baomingGl:edit')){ %>
+					<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+					<% } %>
+					<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+				</div>
+			</div>
+		</div>
+	</#form:form>
+</div>
+</div>
+<% } %>
+<script>
+	var userCode ='${baomingGl.userCodes}';
+	var baomingId ='${baomingGl.baomingId}';
+	$('#dataGrid').dataGrid({
+		url: '${ctx}/web/baomingGl/userListData',
+		postData: {'userCodes':userCode,'baomingId':baomingId},
+		mtype: "POST",
+		datatype: "json",
+		columnModel: [
+			{header:'${text("用户Id")}',hidden:true, name:'userCode', index:'a.user_code', width:150,editable:true,edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+			{header:'${text("用户名")}', name:'userName', index:'a.user_name', width:150,align:"center",editable:true,edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+			{header:'${text("账号")}', name:'loginCode', index:'a.login_code', width:150, align:"center",editable:true,edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+
+		],
+		editGrid: true,				// 是否是编辑表格
+		editGridInputFormListName: 'userList', // 提交的数据列表名
+		editGridInputFormListAttrs: 'userCode,userName,loginCode', // 提交数据列表的属性字段
+
+		// 加载成功后执行事件
+		ajaxSuccess: function(data){
+			// 	var gridData = [];
+			// 	for (var machine in data) {
+			//
+			// 		var temp = {};
+			// 		for (var key in data[machine]) {
+			// 			temp[key] = data[machine][key]
+			// 		}
+			// 		gridData.push(temp);
+			// 		return gridData;
+			// 	}
+		}
+	});
+
+
+
+	$("#inputForm").validate({
+		submitHandler: function(form){
+			js.ajaxSubmitForm($(form), function(data){
+				js.showMessage(data.message);
+				if(data.result == Global.TRUE){
+					js.closeCurrentTabPage(function(contentWindow){
+						contentWindow.page();
+					});
+				}
+			}, "json");
+		}
+	});
+
+	var options=$("#baomingType option:selected"); //获取选中的项
+	$("#extend2").val(options.text());
+	$("#baomingType").change(function() {
+		var options=$("#baomingType option:selected");
+		$("#extend2").val(options.text());
+	})
+	// $("#baomingType").change(function() {
+	//
+	// 	alert(666666)
+	//
+	// })
+</script>

@@ -1,0 +1,952 @@
+<% layout('/layouts/default.html', {title: '登录', libs: ['validate'], bodyClass: 'login-page'}){ %>
+<% include('/include/upgrade.html'){} // 如果客户浏览器版本过低，则显示浏览器升级提示。 %>
+<!-- <link rel="stylesheet" href="${ctxStatic}/icheck/1.0/square/blue.css?${_version}"> -->
+<link rel="stylesheet" href="${ctxStatic}/jquery-toastr/2.1/toastr.min.css?${_version}">
+<link rel="stylesheet" href="${ctxStatic}/modules/sys/sysLogin.css?${_version}">
+<body>
+<div class="loginPageBox">
+	<main class="main">
+		<div class="bodyBox">
+			<div class="left randomBox">
+				<img id="logo" src="/js/static/images/logo.png" alt="logo" />
+				<h2 class="title">中小学家校联系平台</h2>
+				<div class="content">
+					<div class="row nameAndTag">
+						<div class="name">这里是name</div>
+						<div class="tag"></div>
+					</div>
+					<div class="row text">
+						这里是内容
+					</div>
+				</div>
+				<a
+						class="footer"
+						href="#"
+				>
+					<strong class="bold">左边底部填写  不填可注释掉改部分</strong>
+					<span class="connector">-</span>
+
+					<span class="iconArrowRight">›</span>
+				</a>
+			</div>
+			<!-- 右侧登录 注册 -->
+			<div class="right loginBox" >
+
+				<!-- 登录分支 -->
+				<div class="loginBranch" >
+					<% var defaultSkinName = @Global.getConfig('sys.index.skinName', 'skin-blue-light3');
+					var skinName = cookie('skinName', false, defaultSkinName);
+					%>
+					<% var isLoginByValidCode = @Global.getConfigToBoolean('user.loginByValidCode', 'true'); %>
+					<% if(isLoginByValidCode){ %>
+					<ul id="loginTab" class="nav nav-tabs">
+						<li class="active"><a href="#tab-1" data-toggle="tab" action="${ctxAdmin}/login">${text('账号登录')}</a></li>
+						<li><a href="#tab-2" data-toggle="tab" action="${ctxPath}/account/loginByValidCode">${text('邮箱登录')}</a></li>
+						<% if(isNotBlank(@Global.getConfig('shiro.ldapUrl'))){ %>
+						<li><a href="#tab-3" data-toggle="tab" action="${ctxAdmin}/login-ldap">${text('LDAP登录')}</a></li>
+						<% } %>
+					</ul>
+					<% } %>
+					<#form:form id="loginForm" model="${user!}" action="${ctxAdmin}/login" method="post" class="tab-content">
+					<% if(!isLoginByValidCode && isBlank(message!)){ %>
+					<h4 class="login-box-msg">${text('欢迎回来')+'！'}</h4>
+					<% }else if(isNotBlank(message!)){ %>
+					<h4 class="login-box-msg text-red">${message}</h4>
+					<% } %>
+					<div class="form-group has-feedback">
+						<span class="icon-user form-control-feedback" title="${text('登录账号')}"></span>
+						<#form:input type="text" name="username" class="form-control required"
+						data-msg-required="${text('请填写登录账号.')}" placeholder="${text('登录账号')}"
+						value="${cookie('rememberUserCode')}"/>
+					</div>
+					<div class="form-group has-feedback tab-pane tab-1 tab-3 active">
+				<span class="icon-lock form-control-feedback" title="${text('登录密码，鼠标按下显示密码')}"
+					  onmousedown="$('#password').attr('type','text')" onmouseup="$('#password').attr('type','password')"
+					  onmouseenter="$(this).removeClass('icon-lock').addClass('icon-eye')"
+					  onmouseout="$(this).removeClass('icon-eye').addClass('icon-lock')"></span>
+						<#form:input type="password" name="password" class="form-control required"
+						data-msg-required="${text('请填写登录密码.')}" placeholder="${text('登录密码')}" autocomplete="off"/>
+					</div>
+					<% if(@Global.getConfigToBoolean('user.loginCodeCorpUnique', 'false')){ %>
+					<div class="form-group has-feedback">
+						<#form:treeselect id="switchCorpSelect" title="${text('登录租户')}" allowClear="false"
+						name="param_corpCode" url="${ctxAdmin}/sys/corpAdmin/treeData?isShowCode=true" placeholder="${text('登录租户')}"/>
+					</div>
+					<% } %>
+					<div class="form-group has-feedback" id="isValidCodeLogin" style="display:${isValidCodeLogin?'blank':'none'}">
+						<#form:validcode name="validCode" isRequired="true" isRemote="true" isLazy="${!isValidCodeLogin}"/>
+					</div>
+					<div class="form-group has-feedback tab-pane tab-2">
+						<div class="input-group">
+							<input type="text" id="loginValidCode" name="loginValidCode" class="form-control required"
+								   data-msg-required="${text('请填写验证码.')}" placeholder="${text('验证码')}" />
+							<span class="input-group-btn">
+						<input type="button" id="sendLoginValidCode" value="${text('获取验证码')}" class="btn btn-flat"/>
+					</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="mt5 icheck">
+							<label title="${text('公共场所慎用,下次不需要再填写帐号')}"><input type="checkbox"
+																			   name="rememberUserCode"${isNotBlank(cookie('rememberUserCode'))?' checked':''}
+								class="form-control" data-style="minimal-grey"> ${text('记住账号')}</label> &nbsp;
+							<label title="${text('公共场所慎用,下次不需要再填写帐号和密码')}"><input type="checkbox"
+																				  name="rememberMe"${isNotBlank(cookie('rememberMe'))?' checked':''}
+								class="form-control" data-style="minimal-grey"> ${text('自动登录')}</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<!-- <input type="hidden" name="param_deviceType" value="pc"> -->
+						<input type="hidden" name="__url" value="${parameter.__url!}">
+						<button type="submit" class="btn btn-primary btn-block btn-flat"
+								id="btnSubmit" data-loading="${text('登录验证成功，正在进入...')}"
+								data-login-valid="${text('正在验证登录，请稍候...')}">${text('立即登录')}</button>
+					</div>
+				</#form:form>
+				<div class="row">
+					<div class="col-xs-12" style="display: flex;justify-content: center;">
+						<a href="${ctxPath}/account/forgetPwd" class="pull-left">已有账号，忘记密码?</a>
+						<% if (@com.jeesite.common.i18n.I18nLocaleResolver.enabled()){ %>
+						<div class="dropdown pull-right">
+							<a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+								<i class="fa icon-globe"></i> ${@DictUtils.getDictLabel('sys_lang_type', lang(), 'zh_CN')}
+							</a>
+							<ul class="dropdown-menu">
+								<li class="mt5"></li>
+								<% for(var dict in @DictUtils.getDictList('sys_lang_type')){ %>
+								<li><a href="${ctxPath}/lang/${dict.dictValue}">${dict.dictLabel}</a></li>
+								<% } %>
+								<li class="mt10"></li>
+							</ul>
+						</div>
+						<% } %>
+					</div>
+				</div>
+			</div>
+			<!-- 登录分支 end -->
+			<div class="row otherLoginType">
+				<div class="text">其他方式登录</div>
+			</div>
+			<div class="row otherLoginList">
+				<img
+						src="/js/static/images/wx.png"
+						class="item logo"
+						alt="微信"
+				/>
+				<img
+						src="/js/static/images/rlsb.jpg"
+						class="item logo"
+						alt="rlsb"
+				/>
+
+			</div>
+		</div>
+		<div class="robot_vCodeBox">
+			<h2 class="title">机器验证</h2>
+			<img
+					src="/js/static/images/rucaptcha.gif"
+					class="codeImg"
+					id="codeImg"
+					alt="验证码"
+			/>
+			<input
+					id="robotcode_input"
+					type="text"
+					name="code"
+					placeholder="请输入上方图形验证码"
+					maxlength="11"
+					autocomplete="off"
+			/>
+			<div id="vCodeBtn" class="vCodeBtnInactive">验证</div>
+			<div class="errorInfo"></div>
+		</div>
+</div>
+<footer class="footer">
+	<a href="#"
+	>© 加强家校沟通交流，促进教育进步
+	</a>
+</footer>
+</main>
+</div>
+
+<div class="login-copyright">
+	<!--		&copy; ${@DateUtils.getYear()} ${@Global.getConfig('productName')} - Powered By &ndash;&gt;-->
+	<a
+			id="loginKey" data-key="${@Global.getConfig('shiro.loginSubmit.secretKey')}"
+			href="http://jeesite.com" target="_blank">
+		<!--		JeeSite ${@Global.getProperty('jeesiteVersion')}-->
+	</a>
+</div>
+</div>
+</body>
+<% } %>
+<script src="${ctxStatic}/common/des.js?${_version}"></script>
+<script src="${ctxStatic}/jquery-toastr/2.1/toastr.min.js?${_version}"></script>
+<script src="${ctxStatic}/modules/sys/sysLogin.js?${_version}"></script>
+<style>
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		min-width: 1040px;
+		height: 100%;
+		font-size: 14px;
+		font-family: -apple-system, BlinkMacSystemFont, Helvetica Arial, sans-serif;
+	}
+
+	/* 选中时的颜色 */
+	::selection {
+		background: #fe7300;
+		color: rgba(255, 255, 255, 0.8);
+	}
+	/* 修正 < 720px 屏幕高度问题 */
+	@media only screen and (max-height: 720px){
+		.main{
+			top: 0% !important;
+			margin-top: 50px !important;
+			transform: translate(-50%,0%) !important;
+		}
+	}
+	.loginPageBox {
+		min-width: 1040px;
+		height: 100vh;
+		position: relative;
+	}
+
+	.loginPageBox::before {
+		background-image: url(/js/static/images/bg-left.png);
+		/* background-position: right bottom; */
+		content: " ";
+		position: absolute;
+		left: 0;
+		bottom: 0px;
+		width: 394px;
+		height: 468px;
+		background-size: contain;
+		z-index: -1;
+	}
+
+	.loginPageBox::after {
+		background-image: url(/js/static/images/bg-right.png);
+		background-position: right bottom;
+		content: " ";
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		width: 487px;
+		height: 412px;
+		background-size: contain;
+		z-index: -1;
+	}
+
+	.main {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 1000px;
+		min-height: 564px;
+		/* margin-top: calc(-560px / 2);
+        margin-left: calc(-1000px / 2); */
+		/* 不需要知道自身宽高 */
+		transform: translate(-50%, -50%);
+	}
+
+	.bodyBox {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		box-sizing: border-box;
+		box-shadow: 0px 15px 80px 0px rgba(0, 0, 0, 0.3);
+	}
+
+	.bodyBox > .left,
+	.bodyBox > .right,
+	.bodyBox .robot_vCodeBox {
+		width: 50%;
+		min-height: 564px;
+	}
+
+	/* 左侧部分 start */
+	.randomBox {
+		position: relative;
+		background: linear-gradient(0deg, #3a485a 0%, #607089 100%);
+		padding: 80px;
+		box-sizing: border-box;
+	}
+
+	.randomBox::before {
+		background: url(/js/static/images/left-2-4f76bf713bc13c53d0973eda61dd1b55.png)
+		no-repeat;
+		background-position: right bottom;
+		content: " ";
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		/* top: 0; */
+		/* left: 0; */
+		bottom: 0;
+		right: 0;
+		pointer-events: none;
+	}
+
+	.randomBox::after {
+		background: url(/js/static/images/left-1-top.png) no-repeat;
+		background-position: left top;
+		content: " ";
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		pointer-events: none;
+	}
+
+	#logo {
+		width: 144px;
+	}
+
+	.randomBox .title {
+		color: white;
+		font-size: 24px;
+		font-weight: normal;
+		font-family: -apple-system, BlinkMacSystemFont, Helvetica Arial;
+	}
+
+	/* 随机人物 评价部分 */
+	.randomBox .content {
+		min-height: 160px;
+	}
+	.randomBox .content .nameAndTag {
+		margin-top: 46px;
+		display: flex;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.randomBox .content .nameAndTag .tag {
+		margin-left: 12px;
+	}
+
+	.randomBox .content .text {
+		color: rgba(255, 255, 255, 1);
+		margin-top: 16px;
+		line-height: 1.71429;
+		min-height: 40px;
+	}
+
+	.randomBox .footer {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		z-index: 1;
+		position: relative;
+		top: 40px;
+		margin-top: 80px;
+		width: 100%;
+		padding-top: 40px;
+		color: rgba(255, 255, 255, 1);
+		border-top: 1px solid rgba(255, 255, 255, 0.2);
+		text-decoration: none;
+	}
+	.randomBox .footer:hover {
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.randomBox .footer .connector {
+		margin: 0 10px;
+	}
+
+	.randomBox .footer .bold {
+		position: relative;
+	}
+
+	.randomBox .footer .bold::before {
+		/*content: "hot";*/
+		color: white;
+		position: absolute;
+		top: -10px;
+		right: -28px;
+		font-size: 10px;
+		padding: 1px 4px;
+		background-color: #c71d23;
+	}
+
+	.randomBox .footer .iconArrowRight {
+		display: inline-block;
+		font-size: 24px;
+		font-weight: lighter;
+		width: 15px;
+		height: 15px;
+		margin-left: 10px;
+		text-align: center;
+		line-height: 13px;
+		color: black;
+		background: white;
+		border-radius: 50%;
+	}
+
+	/* 左侧部分 end */
+
+	/* 右侧 登录 */
+	.loginBox {
+		padding: 64px 75px 48px;
+		box-sizing: border-box;
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		align-items: space-between;
+		justify-content: flex-start;
+	}
+	.loginBranch {
+		display: block;
+	}
+	.signupBranch {
+		display: none;
+	}
+	/* 机器验证 */
+	.robot_vCodeBox {
+		display: none;
+		flex-direction: column;
+		align-items: center;
+		padding: 64px 75px 48px;
+		box-sizing: border-box;
+		background: #fff;
+	}
+	.robot_vCodeBox .title {
+		width: 100%;
+		font-size: 24px;
+		color: #40485b;
+		text-align: center;
+		margin-top: 30px;
+		margin-bottom: 32px;
+	}
+	.robot_vCodeBox .codeImg {
+		width: 171px;
+		height: 60px;
+	}
+	#robotcode_input {
+		text-align: center;
+		text-indent: -4px;
+		width: 280px;
+		margin-top: 1.5em;
+	}
+	#vCodeBtn {
+		margin-top: 1.5em;
+		width: 54px;
+		height: 32px;
+		text-align: center;
+		line-height: 32px;
+		border-radius: 2px;
+		color: #fff;
+		background: #fe7300;
+		cursor: pointer;
+	}
+	#vCodeBtn + .errorInfo {
+		display: block;
+		font-size: 15px;
+		color: red;
+		margin-top: 60px;
+	}
+	.vCodeBtnInactive {
+		color: #c9c9c9 !important;
+		background: #f2f2f2 !important;
+	}
+	.loginBox .row {
+		width: 100%;
+	}
+
+	.loginBox .spaceBetween {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.loginBox .header {
+		margin-bottom: 24px;
+	}
+
+	.loginBox .header .title {
+		font-size: 24px;
+		color: #40485b;
+		font-weight: bold;
+	}
+
+	.loginBox .header .subTitle .changeRouter {
+		text-decoration: none;
+		color: #005980;
+	}
+	.loginBox .header .subTitle .changeRouter:hover {
+		color: #1283ba;
+	}
+	/* 登录账号密码错误 */
+	.loginError {
+		display: none;
+		width: 100%;
+		height: 50px;
+		padding: 14px 20px;
+		box-shadow: 0px 0px 0px 1px #e0b4b4 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+		background-color: #fff6f6;
+		border-radius: 4px;
+		border: 1px solid #e3e9ed;
+		color: #9f3a38;
+		box-sizing: border-box;
+		margin-bottom: 1.2em;
+	}
+
+	.loginBox .passwordBox,
+	.loginBox .vCodeBox {
+		margin-top: 1.2em;
+	}
+	/* 发送验证码 */
+	.vCodeBoxBody {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.vCodeBoxBody > div,
+	.vCodeBoxBody > input {
+		width: 50% !important;
+		border-radius: 0 !important;
+	}
+	.vCodeBoxBody > input {
+		color: rgba(0, 0, 0, 0.8);
+		background: #f2f2f2;
+	}
+	.vCodeBoxBody .sendVcode {
+		position: relative;
+		height: 40px;
+		line-height: 40px;
+		text-align: center;
+		border: 1px solid #fe7300;
+		color: #fe7300;
+		box-sizing: border-box;
+		cursor: pointer;
+	}
+	.vCodeBoxBody .sendVcode:hover {
+		opacity: 0.6;
+	}
+	.vCodeBoxBody .sendVcode + .help {
+		display: none;
+		position: absolute;
+		background: #fff6f6;
+		color: #912d2b;
+		border: 1px solid #e0b4b4;
+		width: 192px !important;
+		right: -140px;
+		height: 44px;
+		line-height: 44px;
+		text-align: center;
+		border-radius: 4px !important;
+	}
+	.vCodeBoxBody .sendVcode + .help a {
+		text-decoration: none;
+		color: #005980;
+	}
+	.vCodeBoxBody .sendVcode + .help::after {
+		position: absolute;
+		top: 12px;
+		left: -10px;
+		content: " ";
+		border: 10px solid transparent;
+		border-left: 0;
+		border-right-color: #f8ecec;
+	}
+	/* 注册中的发送验证码 */
+	#signupSendVcode + .help {
+		right: -205px !important;
+	}
+	/*  记住我  短信登录*/
+	.loginBox .rememberAndShortmessage .left {
+		display: flex;
+		align-items: center;
+		transition: 0.4s;
+		user-select: none;
+	}
+	/* 短信登录 */
+	.loginBox .shortmessageLogin {
+		display: none;
+	}
+	.loginBox .rememberAndShortmessage {
+		margin-top: 1.2em;
+	}
+
+	/* 隐藏原来的多选框 */
+	.loginBox input[type="checkbox"]#remember,
+	.loginBox input[type="checkbox"]#agree {
+		display: none;
+	}
+	.agreeLabel a {
+		text-decoration: none;
+		color: #005980;
+		margin: 0 5px;
+	}
+	/* checkbox被选中时 ,选择label,插入符号 */
+	.loginBox input[type="checkbox"]:checked + .rememberLabel .checkboxUi:after {
+		content: "✔";
+	}
+	.loginBox input[type="checkbox"]:checked + .agreeLabel .checkboxUi:after {
+		content: "✔";
+	}
+	/* checkbox被选中时 ,修改整个选择框背景*/
+	.loginBox input[type="checkbox"]:checked + .rememberLabel .checkboxUi {
+		background: #fe7300;
+	}
+	.loginBox input[type="checkbox"]:checked + .agreeLabel .checkboxUi {
+		background: #fe7300;
+	}
+	/* 自定义checkbox的ui */
+	.loginBox .checkboxUi {
+		width: 15px;
+		height: 15px;
+		text-align: center;
+		border: 1px solid #fe7300;
+		font-size: 14px;
+		font-weight: bold;
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 3px;
+		margin-right: 5px;
+	}
+
+	.loginBox .rememberLabel,
+	.loginBox .agreeLabel {
+		display: flex;
+		align-items: center;
+		position: relative;
+		cursor: pointer;
+	}
+
+	/* 短信验证登录 */
+	.loginBox .shortmessageSignup,
+	.changeNormalLogin {
+		display: none;
+		text-decoration: none;
+		cursor: pointer;
+		color: #005980;
+	}
+	.loginBox .shortmessageSignup:hover,
+	.loginBox .changeNormalLogin:hover {
+		color: #1283ba;
+	}
+	/*!! 登录 增加防止复制 */
+	button.submit {
+		cursor: pointer;
+		display: inline-block;
+		outline: none;
+		border: none;
+		margin: 1.2em 0;
+		width: 100%;
+		height: 38px;
+		padding: 8px 26px;
+		font-size: 18px;
+		color: white;
+		background: #fe7300;
+		user-select: none;
+	}
+	/* 按钮移入按下效果 */
+	button.submit:hover {
+		background: rgba(245, 128, 33, 0.897);
+	}
+	button.submit:active {
+		background: #e07b53;
+	}
+	/* 已有账号,忘记密码 */
+	.loginBox .forgetPassword {
+		width: 100%;
+		text-align: center;
+		text-decoration: none;
+		cursor: pointer;
+		color: #005980;
+	}
+	.loginBox .forgetPassword:hover {
+		color: #1283ba;
+	}
+	/* oschin登录 */
+	.loginBox .oschinaLogin {
+		text-decoration: none;
+		margin-top: 2.4em;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	.loginBox .oschinaLogin > .logo {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		margin-right: 10px;
+	}
+
+	.loginBox .oschinaLogin > .text {
+		color: #323232;
+		font-size: 16px;
+		line-height: 40px;
+	}
+
+	/* 其他登录方式  hr*/
+	.loginBox .otherLoginType {
+		margin-top: 1.6em;
+		display: flex;
+		align-items: center;
+		color: #8c92a4;
+		text-align: center;
+	}
+
+	.loginBox .otherLoginType > .text {
+		padding: 0 14px;
+	}
+
+	.loginBox .otherLoginType::after,
+	.loginBox .otherLoginType::before {
+		content: " ";
+		flex: 1;
+		height: 1px;
+		background: #eee;
+	}
+
+	/* 其他登录方式 图标列表 */
+	.loginBox .otherLoginList {
+		position: relative;
+		margin-top: 1em;
+		display: flex;
+		justify-content: space-around;
+		flex-wrap: wrap;
+		user-select: none;
+	}
+
+	.loginBox .otherLoginList .logo {
+		width: 35px;
+		height: 35px;
+	}
+
+	.otherLoginList > .item.more {
+		position: relative;
+	}
+
+	/* 宽度大一点,然后透明 ,防止css :hover未移入隐藏 */
+	.loginBox .otherLoginList .moreListBox {
+		position: absolute;
+		left: -270px;
+		top: -35px;
+		width: 270px;
+		height: 100px;
+		transition: 0.4s;
+		background: transparent;
+		/* box-shadow: 1px 2px 15px 0 rgba(0, 0, 0, 0.3); */
+		opacity: 0;
+		transform: scale(0);
+		transform-origin: 70% center;
+		/* transform: scale(0) translate(-100%, -100%); */
+	}
+
+	/* 宽度小一点 ,实际显示容器 */
+	.loginBox .otherLoginList .moreList {
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+		align-items: center;
+		padding: 10px 20px;
+		box-sizing: border-box;
+		width: 260px;
+		min-height: 100px;
+		background: white;
+		box-shadow: 1px 2px 15px 0 rgba(0, 0, 0, 0.3);
+	}
+
+	/* 排除每排第一个 */
+	.loginBox .otherLoginList .moreList .item:not(:nth-child(4n + 1)) {
+		margin-left: 25px;
+	}
+
+	/* 选择第一排之后的元素(n从0开始 且包含首次) */
+	.loginBox .otherLoginList .moreList .item:nth-child(n + 5) {
+		margin-top: 15px;
+	}
+
+	/* 三角形 */
+	.loginBox .otherLoginList .moreList::after {
+		content: " ";
+		position: absolute;
+		top: 50%;
+		margin-top: -5px;
+		right: 0%;
+		border: 10px solid transparent;
+		border-left-color: white;
+		border-right: 0;
+		/* margin: 0 0 -34px -34px; */
+	}
+	/* 注册页面 */
+	.signupBranch .ignupRow {
+		margin-top: 1em;
+		position: relative;
+	}
+	/* .signupBranch .ignupRow::after {
+        position: absolute;
+        top: 6px;
+        right: -25px;
+        font-size: 22px;
+        font-weight: bold;
+        content: "×";
+        color: red;
+    } */
+	.ignupRowShowClose::after {
+		position: absolute;
+		top: 6px;
+		right: -25px;
+		font-size: 22px;
+		font-weight: bold;
+		content: "×";
+		color: red;
+	}
+	.signupBranch .ignupRow .userDomainBox {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.signupBranch .ignupRow .userDomainBox .leftLabel {
+		flex: 2;
+		height: 40px;
+		text-align: center;
+		font-size: 13px;
+		border-radius: 2px;
+		border: 1px solid #dededf;
+		border-right: none;
+		color: rgba(0, 0, 0, 0.8);
+		background: #f9f9f9;
+		font-weight: normal;
+		padding: 8px 11px;
+		box-sizing: border-box;
+	}
+	.signupBranch .ignupRow .userDomainBox #signupDomain {
+		position: relative;
+		flex: 3;
+		padding-right: 30px !important;
+	}
+	.signupBranch .ignupRow .userDomainBox .questionIcon {
+		position: absolute;
+		right: 10px;
+		width: 25px;
+		height: 25px;
+		background: url("/js/static/images/question.png") no-repeat;
+		background-size: 100% 100%;
+		z-index: 2;
+	}
+	.signupBranch .questionIconTootip {
+		position: absolute;
+		left: -460px;
+		top: -130px;
+		width: 465px;
+		color: white;
+		line-height: 24px;
+		font-size: 12px;
+		background: rgba(0, 0, 0, 0.85);
+		box-shadow: 0 0 6px -1px rgba(140, 146, 163, 0.5);
+		border-radius: 4px;
+		min-height: 50px;
+		padding: 10px 12px;
+		transition: 0.4s;
+		transform: scale(0);
+		opacity: 0;
+		transform-origin: 70% center;
+	}
+	.signupBranch .questionIconTootip::before {
+		position: absolute;
+		right: 12px;
+		bottom: -7px;
+		content: "";
+		border: 8px solid transparent;
+		border-bottom: 0;
+		border-top-color: rgba(0, 0, 0, 0.7);
+	}
+	.signupBranch .questionIcon:hover .questionIconTootip {
+		transform: scale(1) !important;
+		opacity: 1 !important;
+	}
+	.signupBranch .eyeIcon {
+		position: absolute;
+		top: 7px;
+		right: 10px;
+		width: 25px;
+		height: 25px;
+		background-image: url("/js/static/images/eye.png");
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+		z-index: 2;
+		cursor: pointer;
+	}
+	#phoneEmail,
+	#signupPhoneEmail {
+		padding-right: 40px;
+	}
+	/* 更多图标 css动画效果 */
+	.otherLoginList > .item.more:hover .moreListBox {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	/* 底部 footer导航 */
+	.main > .footer {
+		margin-top: 50px;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+	.main > .footer > a {
+		font-size: 14px;
+		line-height: 14px;
+		color: #8c92a4;
+		text-decoration: none;
+		margin-left: 8px;
+		transition: 0.1s;
+	}
+	.main > .footer > a:hover {
+		color: #aeb2bf;
+	}
+	/* !! 改造输入框默认样式 */
+
+	input[type="text"],
+	input[type="password"] {
+		box-shadow: none;
+		border-radius: 3px;
+		border: 1px solid #dfe3e9;
+		outline: none;
+		padding-top: 0.64286em;
+		padding-bottom: 0.64286em;
+		line-height: 1.42858rem;
+		box-sizing: border-box;
+		font-size: 1rem;
+		width: 100%;
+		height: 40px;
+		/* background: transparent; */
+		/* border: none; */
+		/* border-bottom: 2px solid #999; */
+		text-indent: 20px;
+		transition: 0.3s;
+	}
+
+	input[type="text"]:focus,
+	input[type="password"]:focus {
+		border: 1px solid #fe7300;
+		/* background-color: rgb(232, 240, 254); */
+	}
+	/* 错误时 输入框样式 */
+	.inputError {
+		background: #fff0f0 !important;
+		border-color: #dbb1b1 !important;
+		/* border-left: 2px solid #d95c5c !important; */
+		box-shadow: 2px 0 0 0 #d95c5c inset !important;
+		color: #d95c5c;
+	}
+
+	/* 错误信息 */
+	.errorInfo {
+		/* display: none; */
+		margin-top: 1em;
+		font-size: 13px;
+		color: #d95c5c;
+	}
+
+</style>

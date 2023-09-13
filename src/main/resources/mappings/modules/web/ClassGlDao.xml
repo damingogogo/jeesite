@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.web.dao.ClassGlDao">
+	
+	<!-- 查询数据
+	<select id="findList" resultType="ClassGl">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+
+    <select id="findListNj" resultType="com.jeesite.modules.web.entity.ClassGl">
+        select office_name name,parent_code pId, office_code id,status,case when 1=1 then 0 end as shuxing from js_sys_office
+            <if test="type== 1">
+                union
+                select a.nj_name name,a.school_id pId,a.nj_id id,a.status,case when 1=1 then 1 end as shuxing from
+                sys_nj_gl a,js_sys_office b where a.school_id=b.office_code and b.`status`='0'
+            </if>
+            <if test="type== 2">
+                union
+                select a.nj_name name,a.school_id pId,a.nj_id id,a.status,case when 1=1 then 1 end as shuxing from
+                sys_nj_gl a,js_sys_office b where a.school_id=b.office_code and b.`status`='0'
+                union
+                select a.class_name name,a.nj_id pId,a.class_id id,a.status,case when 1=1 then 1 end as shuxing from
+                sys_class_gl a,(select a.* from sys_nj_gl a,js_sys_office b where a.school_id=b.office_code and b.`status`='0') b
+                WHERE
+                a.nj_id=b.nj_id and b.`status`='0'
+            </if>
+    </select>
+</mapper>

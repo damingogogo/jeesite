@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.web.dao.BaomingStasticDao">
+
+	<!-- 查询数据
+	<select id="findList" resultType="BaomingStastic">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+
+    <select id="findPageData" resultType="com.jeesite.modules.web.entity.BaomingStastic">
+        select s.*,
+        b.title "baomingGl.title",
+        b.baoming_status "baomingGl.baomingStatus",
+        b.title "baomingGl.title",
+        b.content "baomingGl.content",
+        b.login_code "baomingGl.loginCode",
+        b.user_name "baomingGl.userName",
+        u.login_code "user.loginCode",
+        u.user_name "user.userName"
+        from sys_baoming_stastic s
+        inner join sys_baoming_gl b on s.baoming_id =b.baoming_id
+        inner join js_sys_user u on  s.extend1=u.login_code
+        where 1=1
+        and s.status !=1
+        and b.status !=1
+        and s.bt_type=#{baomingStastic.btType}
+        <if test="baomingStastic.baomingId != null  and baomingStastic.baomingId !='' ">
+            and s.baoming_id=#{baomingStastic.baomingId}
+        </if>
+        <if test="baomingStastic.extend1 != null  and baomingStastic.extend1 !='' ">
+            and b.login_code=#{baomingStastic.extend1}
+        </if>
+        <if test="baomingStastic.officeCode != null  and baomingStastic.officeCode !='' ">
+            and s.office_code=#{baomingStastic.officeCode}
+        </if>
+        <if test="baomingStastic.baomingGl.baomingStatus != null  and baomingStastic.baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingStastic.baomingGl.baomingStatus}
+        </if>
+        <if test="baomingStastic.baomingGl.title != null  and baomingStastic.baomingGl.title !='' ">
+            and  b.title like CONCAT('%',#{baomingStastic.baomingGl.title},'%')
+        </if>
+<!--        <if test="baomingStastic.user.userName != null  and baomingStastic.user.userName !='' ">-->
+<!--            and  b.title like CONCAT('%',#{baomingStastic.baomingGl.title},'%')-->
+<!--        </if>-->
+        order by s.update_date desc
+        limit ${map.start==null?0:(map.start-1)*map.length},${map.length}
+    </select>
+    <select id="getCount" resultType="java.lang.Long">
+        select count(0)
+        from sys_baoming_stastic s
+        inner join sys_baoming_gl b on s.baoming_id =b.baoming_id
+        inner join js_sys_user u on  s.extend1=u.login_code
+        where 1=1
+        and s.status !=1
+        and b.status !=1
+        and s.bt_type=#{btType}
+        <if test="baomingId != null  and baomingId !='' ">
+            and  s.baoming_id=#{baomingId}
+        </if>
+        <if test="extend1 != null  and extend1 !='' ">
+            and   b.login_code=#{extend1}
+        </if>
+        <if test="officeCode != null  and officeCode !='' ">
+            and s.office_code=#{officeCode}
+        </if>
+        <if test="baomingGl.baomingStatus != null  and baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingGl.baomingStatus}
+        </if>
+        <if test="baomingGl.title != null  and baomingGl.title !='' ">
+            and b.title like CONCAT('%',#{baomingGl.title},'%')
+        </if>
+    </select>
+    <select id="findPageDataToupaio" resultType="com.jeesite.modules.web.entity.BaomingStastic">
+        select s.*,
+        b.title "baomingGl.title",
+        b.baoming_status "baomingGl.baomingStatus",
+        b.content "baomingGl.content",
+        b.login_code "baomingGl.loginCode",
+        b.user_name "baomingGl.userName"
+        from
+        (select baoming_id,COUNT(baoming_id) toupnum from sys_baoming_stastic where bt_type=#{baomingStastic.btType} and status !=1 GROUP BY baoming_id) s,
+         sys_baoming_gl b
+        where s.baoming_id =b.baoming_id
+        and b.status !=1
+        <if test="baomingStastic.baomingId != null  and baomingStastic.baomingId !='' ">
+            and b.baoming_id=#{baomingStastic.baomingId}
+        </if>
+        <if test="baomingStastic.baomingGl.baomingStatus != null  and baomingStastic.baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingStastic.baomingGl.baomingStatus}
+        </if>
+        <if test="baomingStastic.baomingGl.title != null  and baomingStastic.baomingGl.title !='' ">
+            and  b.title like CONCAT('%',#{baomingStastic.baomingGl.title},'%')
+        </if>
+        ORDER BY toupnum desc
+        limit ${map.start==null?0:(map.start-1)*map.length},${map.length}
+    </select>
+    <select id="getCountToupaio" resultType="java.lang.Long">
+        select count(0)
+        from
+        (select baoming_id,COUNT(baoming_id) toupnum from sys_baoming_stastic where bt_type=#{btType} and status !=1 GROUP BY baoming_id) s,
+        sys_baoming_gl b
+        where s.baoming_id =b.baoming_id
+        and b.status !=1
+        <if test="baomingId != null  and baomingId !='' ">
+            and  b.baoming_id=#{baomingId}
+        </if>
+        <if test="baomingGl.baomingStatus != null  and baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingGl.baomingStatus}
+        </if>
+        <if test="baomingGl.title != null  and baomingGl.title !='' ">
+            and b.title like CONCAT('%',#{baomingGl.title},'%')
+        </if>
+    </select>
+    <select id="findToupiaoList" resultType="com.jeesite.modules.web.entity.BaomingStastic">
+select s.baoming_id id,s.baoming_id baoming_id,g.title treeName,s.`status`,case when 1=1 then 0 end as parentCode,case when 1=1 then null end as num,case when 1=1 then 0 end as treeLevel
+from sys_baoming_stastic s,sys_toup_gl g WHERE s.baoming_id=g.baoming_id and g.`status` =0 and s.bt_type=#{btType}
+UNION
+SELECT bt.btp_id id,bt.toupiao_id baoming_id, bt.user_name treeName,bt.`status`,bt.toupiao_id parentCode,t.num,case when 1=1 then 1 end as treeLevel   from sys_btoupiao_user bt
+LEFT JOIN sys_baoming_stastic s on bt.toupiao_id=s.baoming_id
+LEFT JOIN (select toupiao_id,btp_id,COUNT(btp_id) num from sys_toupiao_user   GROUP BY btp_id,toupiao_id)  t
+on bt.btp_id=t.btp_id
+UNION
+SELECT t.tp_id id,t.toupiao_id baoming_i, t.user_name treeName,t.`status`,t.btp_id parentCode,case when 1=1 then null end as num,case when 1=1 then 2 end as treeLevel from sys_btoupiao_user bt
+right JOIN sys_toupiao_user t ON bt.btp_id=t.btp_id
+    </select>
+    <select id="findPageDataTb" resultType="com.jeesite.modules.web.entity.BaomingStastic">
+        select s.*,
+        b.title "baomingGl.title",
+        b.baoming_status "baomingGl.baomingStatus",
+        b.title "baomingGl.title",
+        b.content "baomingGl.content",
+        b.login_code "baomingGl.loginCode",
+        b.user_name "baomingGl.userName",
+        u.login_code "user.loginCode",
+        u.user_name "user.userName"
+        from sys_baoming_stastic s
+        inner join sys_tianb_gl b on s.baoming_id =b.baoming_id
+        inner join js_sys_user u on  s.extend1=u.login_code
+        where 1=1
+        and s.status !=1
+        and b.status !=1
+        and s.bt_type=#{baomingStastic.btType}
+        <if test="baomingStastic.baomingId != null  and baomingStastic.baomingId !='' ">
+            and s.baoming_id=#{baomingStastic.baomingId}
+        </if>
+        <if test="baomingStastic.extend1 != null  and baomingStastic.extend1 !='' ">
+            and b.login_code=#{baomingStastic.extend1}
+        </if>
+        <if test="baomingStastic.officeCode != null  and baomingStastic.officeCode !='' ">
+            and s.office_code=#{baomingStastic.officeCode}
+        </if>
+        <if test="baomingStastic.baomingGl.baomingStatus != null  and baomingStastic.baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingStastic.baomingGl.baomingStatus}
+        </if>
+        <if test="baomingStastic.baomingGl.title != null  and baomingStastic.baomingGl.title !='' ">
+            and  b.title like CONCAT('%',#{baomingStastic.baomingGl.title},'%')
+        </if>
+        <!--        <if test="baomingStastic.user.userName != null  and baomingStastic.user.userName !='' ">-->
+        <!--            and  b.title like CONCAT('%',#{baomingStastic.baomingGl.title},'%')-->
+        <!--        </if>-->
+        order by s.update_date desc
+        limit ${map.start==null?0:(map.start-1)*map.length},${map.length}
+    </select>
+    <select id="getCountTb" resultType="java.lang.Long">
+        select count(0)
+        from sys_baoming_stastic s
+        inner join sys_tianb_gl b on s.baoming_id =b.baoming_id
+        inner join js_sys_user u on  s.extend1=u.login_code
+        where 1=1
+        and s.status !=1
+        and b.status !=1
+        and s.bt_type=#{btType}
+        <if test="baomingId != null  and baomingId !='' ">
+            and  s.baoming_id=#{baomingId}
+        </if>
+        <if test="extend1 != null  and extend1 !='' ">
+            and   b.login_code=#{extend1}
+        </if>
+        <if test="officeCode != null  and officeCode !='' ">
+            and s.office_code=#{officeCode}
+        </if>
+        <if test="baomingGl.baomingStatus != null  and baomingGl.baomingStatus !='' ">
+            and b.baoming_status=#{baomingGl.baomingStatus}
+        </if>
+        <if test="baomingGl.title != null  and baomingGl.title !='' ">
+            and b.title like CONCAT('%',#{baomingGl.title},'%')
+        </if>
+    </select>
+</mapper>

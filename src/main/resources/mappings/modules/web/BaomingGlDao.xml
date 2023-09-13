@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.web.dao.BaomingGlDao">
+
+	<!-- 查询数据
+	<select id="findList" resultType="BaomingGl">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+
+    <select id="findbaomingtj" resultType="java.util.Map">
+         select baoming_type,extend2 office_name,COUNT(baoming_id) ind from sys_baoming_gl
+         WHERE `status` !=1 and bt_type=#{btType} and create_date >= #{createDate} GROUP BY baoming_type,extend2
+    </select>
+    <select id="finduser" resultType="com.jeesite.modules.sys.entity.User">
+        select * from js_sys_user where status!=1 and user_code in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="findtianbaotj" resultType="java.util.Map">
+         select baoming_type,extend2 office_name,COUNT(baoming_id) ind from sys_tianb_gl
+         WHERE `status` !=1 and bt_type=#{btType} and create_date >= #{createDate} GROUP BY baoming_type,extend2
+    </select>
+    <select id="findtouptj" resultType="java.util.Map">
+            select baoming_type,extend2 office_name,COUNT(baoming_id) ind from sys_toup_gl
+         WHERE `status` !=1 and bt_type=#{btType} and create_date >= #{createDate} GROUP BY baoming_type,extend2
+    </select>
+</mapper>

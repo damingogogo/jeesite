@@ -1,0 +1,201 @@
+<% layout('/layouts/default.html', {title: '报名管理管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('报名管理管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('sys:toupGl:edit')){ %>
+					<a href="${ctx}/sys/toupGl/form" class="btn btn-default btnTool" title="${text('新增报名管理')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${toupGl}" action="${ctx}/sys/toupGl/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="title" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('内容')}：</label>
+					<div class="control-inline">
+						<#form:input path="content" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名序号')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingXuhao" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('属性')}：</label>
+					<div class="control-inline">
+						<#form:input path="btType" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingType" maxlength="2" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名文件')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingWenjian" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名状态')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingStatus" maxlength="2" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名描述')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingMs" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名详情')}：</label>
+					<div class="control-inline">
+						<#form:input path="baomingXq" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control isQuick"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 1')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend1" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 2')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend2" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 3')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend3" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 4')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend4" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 5')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend5" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 6')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend6" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 7')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend7" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('扩展 String 8')}：</label>
+					<div class="control-inline">
+						<#form:input path="extend8" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('login_code')}：</label>
+					<div class="control-inline">
+						<#form:input path="loginCode" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('user_code')}：</label>
+					<div class="control-inline">
+						<#form:input path="userCode" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('user_name')}：</label>
+					<div class="control-inline">
+						<#form:input path="userName" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/sys/toupGl/form?baomingId='+row.baomingId+'" class="btnList" data-title="${text("编辑报名管理")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("内容")}', name:'content', index:'a.content', width:150, align:"left"},
+		{header:'${text("报名序号")}', name:'baomingXuhao', index:'a.baoming_xuhao', width:150, align:"left"},
+		{header:'${text("属性")}', name:'btType', index:'a.bt_type', width:150, align:"left"},
+		{header:'${text("报名类型")}', name:'baomingType', index:'a.baoming_type', width:150, align:"left"},
+		{header:'${text("报名文件")}', name:'baomingWenjian', index:'a.baoming_wenjian', width:150, align:"left"},
+		{header:'${text("报名状态")}', name:'baomingStatus', index:'a.baoming_status', width:150, align:"left"},
+		{header:'${text("报名描述")}', name:'baomingMs', index:'a.baoming_ms', width:150, align:"left"},
+		{header:'${text("报名详情")}', name:'baomingXq', index:'a.baoming_xq', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("扩展 String 1")}', name:'extend1', index:'a.extend1', width:150, align:"left"},
+		{header:'${text("扩展 String 2")}', name:'extend2', index:'a.extend2', width:150, align:"left"},
+		{header:'${text("扩展 String 3")}', name:'extend3', index:'a.extend3', width:150, align:"left"},
+		{header:'${text("扩展 String 4")}', name:'extend4', index:'a.extend4', width:150, align:"left"},
+		{header:'${text("扩展 String 5")}', name:'extend5', index:'a.extend5', width:150, align:"left"},
+		{header:'${text("扩展 String 6")}', name:'extend6', index:'a.extend6', width:150, align:"left"},
+		{header:'${text("扩展 String 7")}', name:'extend7', index:'a.extend7', width:150, align:"left"},
+		{header:'${text("扩展 String 8")}', name:'extend8', index:'a.extend8', width:150, align:"left"},
+		{header:'${text("login_code")}', name:'loginCode', index:'a.login_code', width:150, align:"left"},
+		{header:'${text("user_code")}', name:'userCode', index:'a.user_code', width:150, align:"left"},
+		{header:'${text("user_name")}', name:'userName', index:'a.user_name', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+			var actions = [];
+			//<% if(hasPermi('sys:toupGl:edit')){ %>
+				actions.push('<a href="${ctx}/sys/toupGl/form?baomingId='+row.baomingId+'" class="btnList" title="${text("编辑报名管理")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/sys/toupGl/delete?baomingId='+row.baomingId+'" class="btnList" title="${text("删除报名管理")}" data-confirm="${text("确认要删除该报名管理吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			//<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

@@ -1,0 +1,95 @@
+<% layout('/layouts/default.html', {title: '年级管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('年级管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('web:njGl:edit')){ %>
+					<a href="${ctx}/web/njGl/form" class="btn btn-default btnTool" title="${text('新增年级管理表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+				<a href="#" class="btn btn-default" id="btnSetting" title="${text('设置')}"><i class="fa fa-navicon"></i></a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${njGl}" action="${ctx}/web/njGl/listData" method="post" class="form-inline"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<#form:hidden path="njId"/>
+			<#form:hidden path="schoolId"/>
+				<div class="form-group">
+					<label class="control-label">${text('年级名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="njName" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('年级主任姓名')}：</label>
+					<div class="control-inline">
+						<#form:input path="njzrxm" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('年级班级总数')}：</label>
+					<div class="control-inline">
+						<#form:input path="njbjzs" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('年级总人数')}：</label>
+					<div class="control-inline">
+						<#form:input path="njzrs" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('年级描述')}：</label>
+					<div class="control-inline">
+						<#form:input path="njms" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		// {header:'${text("学校id")}', name:'schoolId', index:'a.school_id', width:150, align:"left",  formatter: function(val, obj, row, act){
+		// 	return '<a href="${ctx}/web/njGl/form?njId='+row.njId+'" class="btnList" data-title="${text("编辑年级管理表")}">'+(val||row.id)+'</a>';
+		// }},
+		{header:'${text("年级名称")}', name:'njName', index:'a.nj_name', width:150, align:"left"},
+		{header:'${text("年级主任姓名")}', name:'njzrxm', index:'a.njzrxm', width:150, align:"left"},
+		{header:'${text("年级班级总数")}', name:'njbjzs', index:'a.njbjzs', width:150, align:"left"},
+		{header:'${text("年级总人数")}', name:'njzrs', index:'a.njzrs', width:150, align:"left"},
+		{header:'${text("年级描述")}', name:'njms', index:'a.njms', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("操作")}', name:'actions', width:120, formatter: function(val, obj, row, act){
+			var actions = [];
+			//<% if(hasPermi('web:njGl:edit')){ %>
+				actions.push('<a href="${ctx}/web/njGl/form?njId='+row.njId+'" class="btnList" title="${text("编辑年级管理表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/web/njGl/disable?njId='+row.njId+'" class="btnList" title="${text("停用年级管理表")}" data-confirm="${text("确认要停用该年级管理表吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				} else if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/web/njGl/enable?njId='+row.njId+'" class="btnList" title="${text("启用年级管理表")}" data-confirm="${text("确认要启用该年级管理表吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/web/njGl/delete?njId='+row.njId+'" class="btnList" title="${text("删除年级管理表")}" data-confirm="${text("确认要删除该年级管理表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			//<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+
+	}
+});
+</script>

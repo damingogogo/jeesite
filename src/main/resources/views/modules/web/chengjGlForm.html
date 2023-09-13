@@ -1,0 +1,110 @@
+<% layout('/layouts/default.html', {title: '成绩管理管理', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa icon-note"></i> ${text(chengjGl.isNewRecord ? '新增成绩管理' : '编辑成绩管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${chengjGl}" action="${ctx}/web/chengjGl/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="chengjId"/>
+				<#form:hidden path="subjectIds"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('成绩类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="chengjType" maxlength="100" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('标题')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="title" maxlength="100" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('学生账号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="loginCode" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-unit">${text('科目信息')}</div>
+				<table id="dataGrid"></table>
+<!--				<div id="dataGridPage"></div>-->
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('web:chengjGl:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+	var subjectIds ='${chengjGl.subjectIds}';
+	var chengjId ='${chengjGl.chengjId}';
+	$('#dataGrid').dataGrid({
+		url: '${ctx}/web/chengjGl/kemuListData',
+		postData: {'subjectIds':subjectIds,'chengjId':chengjId},
+		mtype: "POST",
+		datatype: "json",
+		columnModel: [
+			{header:'${text("科目Id")}',hidden:true, name:'subjectId', index:'a.subject_id', width:150,editable:true, edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+			{header:'${text("科目名称")}', name:'subjectName', index:'a.subject_name', width:150,align:"center",editable:true, edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+			{header:'${text("分数")}', name:'extend3', index:'a.extend3', width:150, align:"center",editable:true, edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
+
+		],
+		editGrid: true,				// 是否是编辑表格
+		editGridInputFormListName: 'subjectGlList', // 提交的数据列表名
+		editGridInputFormListAttrs: 'subjectId,subjectName,extend3', // 提交数据列表的属性字段
+
+		// 加载成功后执行事件
+		ajaxSuccess: function(data){
+		// 	var gridData = [];
+		// 	for (var machine in data) {
+		//
+		// 		var temp = {};
+		// 		for (var key in data[machine]) {
+		// 			temp[key] = data[machine][key]
+		// 		}
+		// 		gridData.push(temp);
+		// 		return gridData;
+		// 	}
+		}
+	});
+
+
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>
